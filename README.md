@@ -13,3 +13,5 @@ pip install -r requirements.txt
 **Save your PHI_API_KEY in .env file PHI_API_KEY = 'phi-...**
 
 **Execute python command and open playground session on phidata.com to interact with your agent**
+
+- **weather_test.py and geo_code.py are test programs to pull weather forecasts**
