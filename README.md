@@ -10,7 +10,7 @@ pip install -r requirements.txt
 
 ## playground.py
 
-**Save your PHI_API_KEY in .env file PHI_API_KEY = 'phi-...**
+**Save your PHI_API_KEY in .env file PHI_API_KEY = 'phi-...'**
 
 **Execute python command and open playground session on phidata.com to interact with your agent**
 
