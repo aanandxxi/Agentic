@@ -1,0 +1,6 @@
+phidata
+yfinance
+duckduckgo-search
+ollama
+fastapi
+openmeteo-requests
