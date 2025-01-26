@@ -7,14 +7,11 @@ from phi.tools.duckduckgo import DuckDuckGo
 from dotenv import load_dotenv
 import os
 import phi
-# 
 import openmeteo_requests
 import http.client, urllib.parse, json
 import pandas as pd
-# 
-# from fastapi import FastAPI
-# from phi.playground import Playground, serve_playground_app
-#
+
+
 load_dotenv()
 
 model_id = "llama3.2"
@@ -125,22 +122,11 @@ agent_team = Agent(
         "You can ask Web Search Agent to search for each query to gather additional information"
         "Finance AI Agent can help pull information related to stock markets, stocks, equities etc.",
         "Provide the Weather Agent with the location to pull forecast information for that location"
-        "Finally, compile a thoughtful and engaging summary.",
+        "Finally, compile a thoughtful and engaging summary."
     ],
     show_tool_calls=True,
     markdown=True,
 )
 
-agent_res = agent_team.run("What is the weather forecast in Hyderabad and what is NVDA stock price in Chicago?")
+agent_res = agent_team.run("What is the weather forecast in Hyderabad and share stock price for Tata Motors?")
 print(agent_res.content)
-
-
-# agent_team = Agent(
-#     model=model,
-#     team=[web_search_agent, finance_agent],
-#     instructions=[web_instructions, finance_instructions],
-#     show_tool_calls=True,
-#     markdown=True,
-# )
-
-# agent_team.print_response("Summarize analyst recommendations and share the latest news for NVDA", stream=True)
