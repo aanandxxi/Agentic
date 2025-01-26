@@ -18,6 +18,14 @@ pip install -r requirements.txt
 
 **Save your PHI_API_KEY in .env file PHI_API_KEY = 'phi-...'**
 
-**Change your promplt to the agent and execute python command.**
+**GetForecast class implements Toolkit and is registered as yor custom tool to pull weather forecasts.**
+
+**Change your prompt to the agent and execute python command.**
+
+## multi_agent.py
+
+**Save your PHI_API_KEY in .env file PHI_API_KEY = 'phi-...'**
+
+**Provides three agents, Web Search, Finance and Weather Forecast**
 
 - **weather_test.py and geo_code.py are test programs to pull weather forecasts**
