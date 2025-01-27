@@ -128,5 +128,5 @@ agent_team = Agent(
     markdown=True,
 )
 
-agent_res = agent_team.run("What is the weather forecast in Hyderabad and share stock price for Tata Motors?")
+agent_res = agent_team.run("What is the weather forecast in Chicago and share stock price for Tesla.")
 print(agent_res.content)
