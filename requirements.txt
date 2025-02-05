@@ -4,3 +4,4 @@ duckduckgo-search
 ollama
 fastapi
 openmeteo-requests
+groq

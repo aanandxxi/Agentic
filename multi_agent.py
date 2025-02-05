@@ -1,26 +1,37 @@
 from phi.agent import Agent
 from phi.tools import Toolkit
 import phi.api
-from phi.model.ollama import Ollama
+from phi.model.groq import Groq
 from phi.tools.yfinance import YFinanceTools
 from phi.tools.duckduckgo import DuckDuckGo
+from phi.storage.agent.sqlite import SqlAgentStorage
+from phi.playground import Playground, serve_playground_app
 from dotenv import load_dotenv
 import os
 import phi
 import openmeteo_requests
 import http.client, urllib.parse, json
 import pandas as pd
-
+from phi.agent import Agent
 
 load_dotenv()
 
-model_id = "llama3.2"
-model = Ollama(id=model_id)
-
-web_instructions = 'Always include sources'
-finance_instructions = 'Use tables to display data'
-#
 phi.ap = os.getenv("PHI_API_KEY")
+groq_api_key = os.getenv("GROQ_API_KEY")
+
+model_id = "llama-3.3-70b-versatile"
+model = Groq(id=model_id, api_key=groq_api_key)
+
+web_instructions = "Always include sources you used to generate the answer."
+finance_instructions = 'Use tables to display data where possible.'
+#
+# Create a storage backend using the Sqlite database
+storage = SqlAgentStorage(
+    # store sessions in the ai.sessions table
+    table_name="agent_sessions",
+    # db_file: Sqlite database file
+    db_file="tmp/agent_sessions.db",
+)
 
 #Forecast Tool
 class GetForecast(Toolkit):
@@ -75,58 +86,30 @@ class GetForecast(Toolkit):
      
         return daily_dataframe.to_string()
 
-#weather agent
-weather_agent = Agent(
-    name = "Weather Agent",
-    description="You are a helpful Assistant to get world weather forecast data using tools", 
-    tools=[GetForecast().get_forecast],
-    model=model,
-)
-
-#Search agent
-web_search_agent = Agent(
-    name="Web Search Agent",
-    role="Search the web for information",
-    model=model,
-    tools=[DuckDuckGo()],
-    instruction=[web_instructions],
-    show_tool_calls=True,
-    markdown=True
-)
-
-#finance agent
-finance_agent = Agent(
-    name="Finance AI Agent",
-    model=model,
-    tools=[
-        YFinanceTools(
-            stock_price=True,
-            analyst_recommendations=True,
-            company_info=True,
-            company_news=True,
-            key_financial_ratios=True
-        )
-    ],
-    instruction=[finance_instructions],
-    show_tool_calls=True,
-    markdown=True
-)
-
 # Define the Team Leader agent
 agent_team = Agent(
     name="Agents Team",
     model=model,
-    team=[weather_agent, finance_agent, web_search_agent],
-    instructions=[
-        "You are an agent that helps respond to queries related to weather forecast, web search and financial analysis",
-        "You can ask Web Search Agent to search for each query to gather additional information"
-        "Finance AI Agent can help pull information related to stock markets, stocks, equities etc.",
-        "Provide the Weather Agent with the location to pull forecast information for that location"
-        "Finally, compile a thoughtful and engaging summary."
-    ],
-    show_tool_calls=True,
+    tools = [GetForecast().get_forecast, DuckDuckGo(), YFinanceTools(stock_price=True,
+            analyst_recommendations=True,
+            company_info=True,
+            company_news=True,
+            key_financial_ratios=True)],
+    add_history_to_messages=True,
+    num_history_responses=3,
     markdown=True,
+    storage = storage,
+    instructions=["You are a helpful agent that responds in a polite and positive manner.",
+        "You can search the web to gather additional information",
+        "You can pull financial data and perform financial analysis",
+        "You can pull weather forecast information for a location",
+        "Always include sources you used to generate the answer.",
+        "Use tables to display data where possible.",
+        "Finally, compile a thoughtful summary."]
 )
 
-agent_res = agent_team.run("What is the weather forecast in Hyderabad and share stock price for Tata Motors?")
-print(agent_res.content)
+app = Playground(agents=[agent_team]).get_app()
+
+if __name__ == "__main__":
+    serve_playground_app("multi_agent:app", reload=True)
+
