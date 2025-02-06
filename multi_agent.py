@@ -101,9 +101,6 @@ agent_team = Agent(
     markdown=True,
     # storage = storage,
     instructions=["You are a helpful agent that responds in a polite and positive manner.",
-        "session_handler is capable of providing a list of existing user sessions.",
-        "If user asks to continue the conversation from a previous session, display the list of sessions received from session_handler.",
-        "If user provides an ID of the existing session then ask session handler to continue conversation for the selected session.",
         "You can search the web to gather additional information",
         "You can pull financial data and perform financial analysis",
         "You can pull weather forecast information for a location",
@@ -117,7 +114,7 @@ agtSsn = storage.get_all_sessions()
 for session in agtSsn:
     print(session.session_id, session.memory["runs"][0]["message"]["content"])
 
-agent_team.print_response("I would like to continue a previous conversation.", stream=True)
+# agent_team.print_response("I would like to continue a previous conversation.", stream=True)
 
 
 # app = Playground(agents=[agent_team]).get_app()
