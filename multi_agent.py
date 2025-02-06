@@ -85,6 +85,7 @@ class GetForecast(Toolkit):
         daily_dataframe = pd.DataFrame(data = daily_data)
      
         return daily_dataframe.to_string()
+    
 
 # Define the Team Leader agent
 agent_team = Agent(
@@ -98,8 +99,11 @@ agent_team = Agent(
     add_history_to_messages=True,
     num_history_responses=3,
     markdown=True,
-    storage = storage,
+    # storage = storage,
     instructions=["You are a helpful agent that responds in a polite and positive manner.",
+        "session_handler is capable of providing a list of existing user sessions.",
+        "If user asks to continue the conversation from a previous session, display the list of sessions received from session_handler.",
+        "If user provides an ID of the existing session then ask session handler to continue conversation for the selected session.",
         "You can search the web to gather additional information",
         "You can pull financial data and perform financial analysis",
         "You can pull weather forecast information for a location",
@@ -108,8 +112,16 @@ agent_team = Agent(
         "Finally, compile a thoughtful summary."]
 )
 
-app = Playground(agents=[agent_team]).get_app()
+#List all stored sessions
+agtSsn = storage.get_all_sessions()
+for session in agtSsn:
+    print(session.session_id, session.memory["runs"][0]["message"]["content"])
 
-if __name__ == "__main__":
-    serve_playground_app("multi_agent:app", reload=True)
+agent_team.print_response("I would like to continue a previous conversation.", stream=True)
+
+
+# app = Playground(agents=[agent_team]).get_app()
+
+# if __name__ == "__main__":
+#     serve_playground_app("multi_agent:app", reload=True)
 
